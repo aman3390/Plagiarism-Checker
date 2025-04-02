@@ -45,10 +45,10 @@ public class PlagiarismCheckerGUI extends JFrame {
         file2Field.setCaretColor(Color.WHITE);
         file2Field.setOpaque(true);
 
-        browse1 = createAnimatedButton("📂 Select File 1", new Color(50, 168, 82));
-        browse2 = createAnimatedButton("📂 Select File 2", new Color(50, 168, 82));
-        checkButton = createAnimatedButton("🔍 Check Plagiarism", new Color(0, 122, 255));
-        closeButton = createAnimatedButton("❌ Close", new Color(255, 59, 48));
+        browse1 = createAnimatedButton("Select File 1", new Color(50, 168, 82));
+        browse2 = createAnimatedButton("Select File 2", new Color(50, 168, 82));
+        checkButton = createAnimatedButton("Check Plagiarism", new Color(0, 122, 255));
+        closeButton = createAnimatedButton("Close", new Color(255, 59, 48));
 
         progressBar = new JProgressBar(0, 100);
         progressBar.setStringPainted(true);
