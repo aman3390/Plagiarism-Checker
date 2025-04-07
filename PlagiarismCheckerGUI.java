@@ -1,10 +1,7 @@
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.AbstractBorder; // Add this import
+import javax.swing.border.AbstractBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.io.*;
 import java.util.*;
 
@@ -12,47 +9,40 @@ public class PlagiarismCheckerGUI extends JFrame {
     private JTextField file1Field, file2Field;
     private JButton browse1, browse2, checkButton, closeButton;
     private JProgressBar progressBar;
+    private Font poppinsRegular, poppinsBold;
 
     public PlagiarismCheckerGUI() {
-        setTitle("Plagiarism Checker");
-        setSize(650, 400);
+        setTitle("Plagiarism Checker - KMP Algorithm");
+        setSize(750, 500);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new GridBagLayout());
-        getContentPane().setBackground(new Color(32, 32, 32)); // Dark theme
+        getContentPane().setBackground(new Color(15, 15, 15));
 
-        UIManager.put("Button.font", new Font("San Francisco", Font.PLAIN, 14));
-        UIManager.put("TextField.font", new Font("San Francisco", Font.PLAIN, 14));
-        UIManager.put("Label.font", new Font("San Francisco", Font.BOLD, 14));
-        UIManager.put("ProgressBar.font", new Font("San Francisco", Font.PLAIN, 12));
+        loadCustomFonts();
+
+        UIManager.put("Button.font", poppinsBold);
+        UIManager.put("TextField.font", poppinsRegular);
+        UIManager.put("Label.font", poppinsBold);
+        UIManager.put("ProgressBar.font", poppinsRegular);
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.insets = new Insets(12, 12, 12, 12);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = 1.0;
 
-        file1Field = new JTextField(20);
-        file1Field.setBorder(new EmptyBorder(5, 5, 5, 5));
-        file1Field.setBackground(new Color(48, 48, 48));
-        file1Field.setForeground(Color.WHITE);
-        file1Field.setCaretColor(Color.WHITE);
-        file1Field.setOpaque(true);
+        file1Field = createStyledField();
+        file2Field = createStyledField();
 
-        file2Field = new JTextField(20);
-        file2Field.setBorder(new EmptyBorder(5, 5, 5, 5));
-        file2Field.setBackground(new Color(48, 48, 48));
-        file2Field.setForeground(Color.WHITE);
-        file2Field.setCaretColor(Color.WHITE);
-        file2Field.setOpaque(true);
-
-        browse1 = createAnimatedButton("Select File 1", new Color(50, 168, 82));
-        browse2 = createAnimatedButton("Select File 2", new Color(50, 168, 82));
-        checkButton = createAnimatedButton("Check Plagiarism", new Color(0, 122, 255));
-        closeButton = createAnimatedButton("Close", new Color(255, 59, 48));
+        browse1 = createAnimatedButton("\uD83D\uDCC2 File 1", new Color(50, 168, 82));
+        browse2 = createAnimatedButton("\uD83D\uDCC2 File 2", new Color(50, 168, 82));
+        checkButton = createAnimatedButton("\uD83D\uDD0D Check", new Color(0, 122, 255));
+        closeButton = createAnimatedButton("\u274C Close", new Color(255, 59, 48));
 
         progressBar = new JProgressBar(0, 100);
         progressBar.setStringPainted(true);
-        progressBar.setForeground(new Color(50, 168, 82));
+        progressBar.setForeground(new Color(212, 175, 55));
+        progressBar.setBackground(new Color(40, 40, 40));
 
         browse1.addActionListener(e -> chooseFile(file1Field));
         browse2.addActionListener(e -> chooseFile(file2Field));
@@ -74,53 +64,54 @@ public class PlagiarismCheckerGUI extends JFrame {
         setVisible(true);
     }
 
+    private void loadCustomFonts() {
+        try {
+            poppinsRegular = Font.createFont(Font.TRUETYPE_FONT, new File("Poppins-Regular.ttf")).deriveFont(14f);
+            poppinsBold = Font.createFont(Font.TRUETYPE_FONT, new File("Poppins-Bold.ttf")).deriveFont(16f);
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            ge.registerFont(poppinsRegular);
+            ge.registerFont(poppinsBold);
+        } catch (Exception e) {
+            poppinsRegular = new Font("SansSerif", Font.PLAIN, 14);
+            poppinsBold = new Font("SansSerif", Font.BOLD, 16);
+        }
+    }
+
+    private JTextField createStyledField() {
+        JTextField field = new JTextField(20);
+        field.setBorder(new RoundedBorder(10));
+        field.setBackground(new Color(30, 30, 30));
+        field.setForeground(Color.WHITE);
+        field.setCaretColor(Color.WHITE);
+        return field;
+    }
+
     private JButton createAnimatedButton(String text, Color color) {
         JButton button = new JButton(text);
         button.setBackground(color);
         button.setForeground(Color.WHITE);
-        button.setFont(new Font("San Francisco", Font.BOLD, 14));
+        button.setFont(poppinsBold);
         button.setFocusPainted(false);
         button.setBorderPainted(false);
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
         button.setOpaque(true);
-        button.setBorder(new RoundedBorder(10)); // Rounded border
+        button.setBorder(new RoundedBorder(12));
 
         button.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
+            @Override public void mouseEntered(MouseEvent e) {
                 button.setBackground(button.getBackground().brighter());
             }
-            @Override
-            public void mouseExited(MouseEvent e) {
+            @Override public void mouseExited(MouseEvent e) {
                 button.setBackground(color);
             }
-            @Override
-            public void mousePressed(MouseEvent e) {
+            @Override public void mousePressed(MouseEvent e) {
                 button.setBackground(button.getBackground().darker());
-                bounceButton(button);
             }
-            @Override
-            public void mouseReleased(MouseEvent e) {
+            @Override public void mouseReleased(MouseEvent e) {
                 button.setBackground(color);
             }
         });
         return button;
-    }
-
-    private void bounceButton(JButton button) {
-        Point originalLocation = button.getLocation();
-        javax.swing.Timer timer = new javax.swing.Timer(10, e -> {
-            Point currentLocation = button.getLocation();
-            int xOffset = (int) (Math.random() * 10 - 5);
-            int yOffset = (int) (Math.random() * 10 - 5);
-            button.setLocation(currentLocation.x + xOffset, currentLocation.y + yOffset);
-
-            if (Math.abs(currentLocation.x - originalLocation.x) > 20 || Math.abs(currentLocation.y - originalLocation.y) > 20) {
-                ((javax.swing.Timer) e.getSource()).stop();
-                button.setLocation(originalLocation); // Return to original position after bounce
-            }
-        });
-        timer.start();
     }
 
     private void chooseFile(JTextField field) {
@@ -139,16 +130,23 @@ public class PlagiarismCheckerGUI extends JFrame {
             return;
         }
 
+        File file1 = new File(file1Path);
+        File file2 = new File(file2Path);
+        if (file1.length() == 0 || file2.length() == 0) {
+            JOptionPane.showMessageDialog(this, "One of the files is empty!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         new Thread(() -> {
             try {
-                for (int i = 10; i <= 100; i += 10) {
+                for (int i = 10; i <= 100; i += 20) {
                     progressBar.setValue(i);
                     Thread.sleep(100);
                 }
                 String text1 = readFile(file1Path);
                 String text2 = readFile(file2Path);
-                double similarity = checkSimilarity(text1, text2);
-                JOptionPane.showMessageDialog(this, "Plagiarism Similarity: " + similarity + "%", "Result", JOptionPane.INFORMATION_MESSAGE);
+                double similarity = calculateKMPPlagiarism(text1, text2);
+                showGlassResult(similarity);
                 progressBar.setValue(0);
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -156,47 +154,119 @@ public class PlagiarismCheckerGUI extends JFrame {
         }).start();
     }
 
+    private void showGlassResult(double similarity) {
+        // Create result panel with premium style
+        JPanel panel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2d.setColor(new Color(28, 28, 30, 220)); // Matte dark background
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
+            }
+        };
+        panel.setLayout(new GridBagLayout());
+        panel.setPreferredSize(new Dimension(350, 120));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        // Result label
+        JLabel label = new JLabel("🔍 Similarity: " + String.format("%.2f", similarity) + "%");
+        label.setFont(new Font("Poppins", Font.BOLD, 22));
+        label.setForeground(new Color(212, 175, 55)); // Premium gold
+        label.setOpaque(false);
+
+        // Add label to panel
+        panel.add(label);
+
+        // Show premium-styled dialog
+        JOptionPane.showMessageDialog(
+                this,
+                panel,
+                "Plagiarism Result",
+                JOptionPane.PLAIN_MESSAGE
+        );
+    }
+
+
+
     private String readFile(String filePath) throws IOException {
         StringBuilder content = new StringBuilder();
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = br.readLine()) != null) {
-                content.append(line).append("\n");
+                content.append(line.toLowerCase()).append(" ");
             }
         }
         return content.toString();
     }
 
-    private double checkSimilarity(String text1, String text2) {
-        String[] words1 = text1.toLowerCase().split("\\s+");
-        String[] words2 = text2.toLowerCase().split("\\s+");
-        int commonWords = 0;
-        for (String word : words1) {
-            if (Arrays.asList(words2).contains(word)) {
-                commonWords++;
+    // ✅ KMP Algorithm for Substring Matching
+    private double calculateKMPPlagiarism(String text1, String text2) {
+        String[] sentences1 = text1.split("[\\.!?]");
+        int matchedSentences = 0;
+
+        for (String sentence : sentences1) {
+            sentence = sentence.trim();
+            if (sentence.length() > 10 && KMPSearch(sentence, text2)) {
+                matchedSentences++;
             }
         }
-        return (double) commonWords / Math.max(words1.length, words2.length) * 100;
+
+        return (double) matchedSentences / sentences1.length * 100;
+    }
+
+    private boolean KMPSearch(String pattern, String text) {
+        int[] lps = computeLPSArray(pattern);
+        int i = 0, j = 0;
+
+        while (i < text.length()) {
+            if (pattern.charAt(j) == text.charAt(i)) {
+                i++; j++;
+            }
+
+            if (j == pattern.length()) return true;
+            else if (i < text.length() && pattern.charAt(j) != text.charAt(i)) {
+                if (j != 0) j = lps[j - 1];
+                else i++;
+            }
+        }
+        return false;
+    }
+
+    private int[] computeLPSArray(String pattern) {
+        int[] lps = new int[pattern.length()];
+        int len = 0, i = 1;
+
+        while (i < pattern.length()) {
+            if (pattern.charAt(i) == pattern.charAt(len)) {
+                lps[i++] = ++len;
+            } else {
+                if (len != 0) len = lps[len - 1];
+                else lps[i++] = 0;
+            }
+        }
+        return lps;
     }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(PlagiarismCheckerGUI::new);
     }
 
-    // Rounded border for buttons and text fields
     static class RoundedBorder extends AbstractBorder {
         private final int radius;
-
         public RoundedBorder(int radius) {
             this.radius = radius;
         }
-
         @Override
         public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
-            g.setColor(c.getBackground());
-            g.fillRoundRect(x, y, width - 1, height - 1, radius, radius);
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setColor(new Color(212, 175, 55));
+            g2.setStroke(new BasicStroke(2f));
+            g2.drawRoundRect(x, y, width - 2, height - 2, radius, radius);
+            g2.dispose();
         }
-
         @Override
         public Insets getBorderInsets(Component c) {
             return new Insets(10, 10, 10, 10);
